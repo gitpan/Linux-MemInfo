@@ -1,6 +1,6 @@
 package Linux::MemInfo;
 
-use 5.008;
+use 5.006;
 use strict;
 use warnings;
 
@@ -24,7 +24,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw( get_mem_info
 );
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 
 # Preloaded methods go here.
@@ -35,25 +35,25 @@ sub get_mem_info() {
     my %mem;
     open(INFIL,"/proc/meminfo") || die("Unable To Open /proc/meminfo\n");
     NXTMI: foreach(<INFIL>) {
-        if( m/^Mem:(\s+)(\S+)(\s+)(\S+)(\s+)(\S+)(\s+)(\S+)(\s+)(\S+)(\s+)(\S+)/ ) {
-            $mem{mem_total}   = $2;
-            $mem{mem_used}    = $4;
-            $mem{mem_free}    = $6;
-            $mem{mem_shared}  = $8;
-            $mem{mem_buffers} = $10;
-            $mem{mem_cached}  = $12;
+        if( m/^Mem:\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/ ) {
+            $mem{mem_total}   = $1;
+            $mem{mem_used}    = $2;
+            $mem{mem_free}    = $3;
+            $mem{mem_shared}  = $4;
+            $mem{mem_buffers} = $5;
+            $mem{mem_cached}  = $6;
             next NXTMI;
         }
-        elsif( m/^Swap:(\s+)(\S+)(\s+)(\S+)(\s+)(\S+)/ ) {
-            $mem{swap_total} = $2;
-            $mem{swap_used} = $4;
-            $mem{swap_free} = $6;
+        elsif( m/^Swap:\s+(\S+)\s+(\S+)\s+(\S+)/ ) {
+            $mem{swap_total} = $1;
+            $mem{swap_used} = $2;
+            $mem{swap_free} = $3;
             next NXTMI;
         }
-        elsif( m/^(\S+):(\s+)(\S+) (\S+)/ ) {
-            my $unit = $1 . "_unit";
-            $mem{$1} = $3;
-            $mem{$unit} = $4;
+        elsif( m/^(\S+):\s+(\S+) (\S+)/ ) {
+            my $unit = $1 . "Unit";
+            $mem{$1} = $2;
+            $mem{$unit} = $3;
             next NXTMI;
         }
     }
@@ -89,42 +89,42 @@ Linux::MemInfo - Perl extension for accessing /proc/meminfo
     Would yield the following:
     Active                  371368 
     ActiveAnon              104980 
-    ActiveAnon_unit         kB 
+    ActiveAnonUnit          kB 
     ActiveCache             266388 
-    ActiveCache_unit        kB 
-    Active_unit             kB 
+    ActiveCacheUnit         kB 
+    ActiveUnit              kB 
     Buffers                 80968 
-    Buffers_unit            kB 
+    BuffersUnit             kB 
     Cached                  272400 
-    Cached_unit             kB 
+    CachedUnit              kB 
     HighFree                0 
-    HighFree_unit           kB 
+    HighFreeUnit            kB 
     HighTotal               0 
-    HighTotal_unit          kB 
+    HighTotalUnit           kB 
     Inact_clean             9976 
-    Inact_clean_unit        kB 
+    Inact_cleanUnit         kB 
     Inact_dirty             0 
-    Inact_dirty_unit        kB 
+    Inact_dirtyUnit         kB 
     Inact_laundry           75480 
-    Inact_laundry_unit      kB 
+    Inact_laundryUnit       kB 
     Inact_target            91364 
-    Inact_target_unit       kB 
+    Inact_targetUnit        kB 
     LowFree                 11172 
-    LowFree_unit            kB 
+    LowFreeUnit             kB 
     LowTotal                512540 
-    LowTotal_unit           kB 
+    LowTotalUnit            kB 
     MemFree                 11172 
-    MemFree_unit            kB 
+    MemFreeUnit             kB 
     MemShared               0 
-    MemShared_unit          kB 
+    MemSharedUnit           kB 
     MemTotal                512540 
-    MemTotal_unit           kB 
+    MemTotalUnit            kB 
     SwapCached              6768 
-    SwapCached_unit         kB 
+    SwapCachedUnit          kB 
     SwapFree                505096 
-    SwapFree_unit           kB 
+    SwapFreeUnit            kB 
     SwapTotal               522072 
-    SwapTotal_unit          kB 
+    SwapTotalUnit           kB 
     mem_buffers             82911232 
     mem_cached              285868032 
     mem_free                11440128 
@@ -135,7 +135,7 @@ Linux::MemInfo - Perl extension for accessing /proc/meminfo
     swap_total              534601728 
     swap_used               17383424 
     
-    The raw data looks like this:
+    The raw data looks like this: cat /proc/meminfo
             total:    used:    free:  shared: buffers:  cached:
     Mem:  524840960 510504960 14336000        0 81543168 283406336
     Swap: 534601728 17448960 517152768
@@ -167,7 +167,7 @@ None
 
 =head1 AUTHOR
 
-Chad Kerner, E<lt>chadkerner@yahoo.com<gt>
+Chad Kerner, E<lt>chadkerner@yahoo.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 

@@ -4,3 +4,4 @@ MANIFEST
 MemInfo.pm
 README
 t/1.t
+examples/meminfo.pl
